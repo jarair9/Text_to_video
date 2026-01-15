@@ -41,6 +41,9 @@ def run_generation_pipeline(topic, script_model, img_model, audio_model, caption
         config = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(config)
         
+        # Also import the config values directly for this function
+        from config import BGM_PATH as original_bgm_path
+        
         # Temporarily update configuration values
         original_script_model = config.SCRIPT_MODEL
         original_img_model = config.IMG_MODEL
@@ -148,7 +151,7 @@ def run_generation_pipeline(topic, script_model, img_model, audio_model, caption
             try:
                 bgm_video_path = bgm_generator.add_background_music(
                     video_path=video_path,
-                    bgm_path=config.BGM_PATH,
+                    bgm_path=original_bgm_path,
                     bgm_volume=bgm_volume,
                     voiceover_volume=1.0
                 )
@@ -199,6 +202,12 @@ def run_generation_pipeline(topic, script_model, img_model, audio_model, caption
 
 
 def main():
+    # Import config values inside the main function to ensure they're available
+    from config import (
+        SCRIPT_MODEL, IMG_MODEL, AUDIO_MODEL, CAPTION_MODEL, 
+        CAPTION_STYLE, BGM_ENABLED, BGM_PATH, BGM_MODEL, ANIMATION, AUDIO_MODEL_VOICE
+    )
+    
     st.set_page_config(
         page_title="Text-to-Video Generator",
         page_icon="🎬",
