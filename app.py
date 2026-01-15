@@ -215,21 +215,47 @@ def main():
         caption_models = ["whisperx", "simple_captions"]
         animations = ["fadein_fadeout", "zoom_fade_mix", "zoom_in_out"]
         
-        script_model = st.selectbox("Script Model", script_models, index=script_models.index(SCRIPT_MODEL) if SCRIPT_MODEL in script_models else 0)
-        img_model = st.selectbox("Image Model", img_models, index=img_models.index(IMG_MODEL) if IMG_MODEL in img_models else 0)
-        audio_model = st.selectbox("Audio Model", audio_models, index=audio_models.index(AUDIO_MODEL) if AUDIO_MODEL in audio_models else 0)
-        caption_model = st.selectbox("Caption Model", caption_models, index=caption_models.index(CAPTION_MODEL) if CAPTION_MODEL in caption_models else 0)
-        animation = st.selectbox("Animation Style", animations, index=animations.index(ANIMATION) if ANIMATION in animations else 0)
+        # Ensure current config values are in the lists
+        if SCRIPT_MODEL not in script_models:
+            script_models.insert(0, SCRIPT_MODEL)
+        if IMG_MODEL not in img_models:
+            img_models.insert(0, IMG_MODEL)
+        if AUDIO_MODEL not in audio_models:
+            audio_models.insert(0, AUDIO_MODEL)
+        if CAPTION_MODEL not in caption_models:
+            caption_models.insert(0, CAPTION_MODEL)
+        if ANIMATION not in animations:
+            animations.insert(0, ANIMATION)
+        
+        script_model_index = script_models.index(SCRIPT_MODEL) if SCRIPT_MODEL in script_models else 0
+        img_model_index = img_models.index(IMG_MODEL) if IMG_MODEL in img_models else 0
+        audio_model_index = audio_models.index(AUDIO_MODEL) if AUDIO_MODEL in audio_models else 0
+        caption_model_index = caption_models.index(CAPTION_MODEL) if CAPTION_MODEL in caption_models else 0
+        animation_index = animations.index(ANIMATION) if ANIMATION in animations else 0
+        
+        script_model = st.selectbox("Script Model", script_models, index=script_model_index)
+        img_model = st.selectbox("Image Model", img_models, index=img_model_index)
+        audio_model = st.selectbox("Audio Model", audio_models, index=audio_model_index)
+        caption_model = st.selectbox("Caption Model", caption_models, index=caption_model_index)
+        animation = st.selectbox("Animation Style", animations, index=animation_index)
         
         st.subheader("Model Settings")
         
         # Audio voice selection
         audio_voices = ["en-US-JennyNeural", "en-US-GuyNeural", "en-US-AriaNeural", "en-US-DavisNeural", "en-US-EmmaNeural", "en-US-MichelleNeural"]
-        audio_voice = st.selectbox("Audio Voice", audio_voices, index=audio_voices.index(AUDIO_MODEL_VOICE) if AUDIO_MODEL_VOICE in audio_voices else 0)
+        # Ensure the current config value is in the list
+        if AUDIO_MODEL_VOICE not in audio_voices:
+            audio_voices.insert(0, AUDIO_MODEL_VOICE)  # Add current value at the beginning
+        audio_voice_index = audio_voices.index(AUDIO_MODEL_VOICE) if AUDIO_MODEL_VOICE in audio_voices else 0
+        audio_voice = st.selectbox("Audio Voice", audio_voices, index=audio_voice_index)
         
         # Caption styles
         caption_styles = ["default", "comic", "horror"]
-        caption_style = st.selectbox("Caption Style", caption_styles, index=caption_styles.index(CAPTION_STYLE) if CAPTION_STYLE in caption_styles else 0)
+        # Ensure the current config value is in the list
+        if CAPTION_STYLE not in caption_styles:
+            caption_styles.insert(0, CAPTION_STYLE)  # Add current value at the beginning
+        caption_style_index = caption_styles.index(CAPTION_STYLE) if CAPTION_STYLE in caption_styles else 0
+        caption_style = st.selectbox("Caption Style", caption_styles, index=caption_style_index)
         
         st.subheader("Options")
         include_captions = st.checkbox("Include Captions", value=True)
