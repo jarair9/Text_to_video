@@ -205,7 +205,8 @@ def main():
     # Import config values inside the main function to ensure they're available
     from config import (
         SCRIPT_MODEL, IMG_MODEL, AUDIO_MODEL, CAPTION_MODEL, 
-        CAPTION_STYLE, BGM_ENABLED, BGM_PATH, BGM_MODEL, ANIMATION, AUDIO_MODEL_VOICE
+        CAPTION_STYLE, BGM_ENABLED, BGM_PATH, BGM_MODEL, ANIMATION, 
+        AUDIO_MODEL_VOICE, BGM_VOLUME
     )
     
     st.set_page_config(
