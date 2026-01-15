@@ -11,10 +11,10 @@ class ScriptGenerator:
     def __init__(self):
         env_vars = dotenv_values(".env")
         self.api_key = env_vars.get("DDC_API_KEY")
-        self.base_url = "https://beta.sree.shop/v1"
+        self.base_url = "https://api.a4f.co/v1"
         
         if not self.api_key:
-            raise ValueError("❌ DDC_API_KEY not found. Check your .env file.")
+            raise ValueError("❌ A4F_API_KEY not found. Check your .env file.")
 
         self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
 
@@ -25,7 +25,7 @@ class ScriptGenerator:
         response = self.client.chat.completions.create(
             model=SCRIPT_MODEL_TYPE,
             messages=[
-                {"role": "developer", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": topic}
             ],
             temperature=1.2,

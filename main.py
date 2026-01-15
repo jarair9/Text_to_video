@@ -26,7 +26,8 @@ from Models.Video.video_factory import load_video_model
 from Models.Captions.captions_factory import load_caption_model
 from Models.Script.utils import save_formatted_script
 from Models.Image.utils import format_for_image_prompt
-from config import CAPTION_MODEL, CAPTION_STYLE
+from Models.BGM.bgm_factory import load_bgm_model
+from config import CAPTION_MODEL, CAPTION_STYLE, BGM_ENABLED, BGM_PATH, BGM_MODEL
 from progress_tracker import ProgressTracker, Stage
 import time
 
@@ -55,6 +56,12 @@ def parse_arguments():
         "--no-captions",
         action="store_true",
         help="Skip caption generation"
+    )
+    
+    parser.add_argument(
+        "--no-bgm",
+        action="store_true",
+        help="Skip background music addition"
     )
     
     parser.add_argument(
@@ -166,6 +173,32 @@ def main():
             tracker.log_substep("Skipping caption generation (--no-captions flag)")
         else:
             tracker.error("Video generation failed")
+        
+        # 8. Add Background Music to Video
+        if video_path and BGM_ENABLED and not args.no_bgm:
+            tracker.update_stage(Stage.BGM)
+            tracker.log_substep(f"Adding background music using model: {BGM_MODEL}")
+            
+            bgm_generator = load_bgm_model()
+            
+            try:
+                bgm_video_path = bgm_generator.add_background_music(
+                    video_path=video_path,
+                    bgm_path=BGM_PATH,
+                    bgm_volume=0.3,
+                    voiceover_volume=1.0
+                )
+                
+                if bgm_video_path:
+                    video_path = bgm_video_path
+                else:
+                    tracker.warning("BGM addition failed, but video is available without BGM")
+            except Exception as e:
+                tracker.error(f"Error during BGM addition", e)
+        elif video_path and (not BGM_ENABLED or args.no_bgm):
+            tracker.log_substep("Skipping BGM addition (--no-bgm flag or BGM disabled in config)")
+        else:
+            tracker.error("Video generation failed before BGM stage")
 
         # Clear the Temp data after Generation
         if not args.skip_cleanup:

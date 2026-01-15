@@ -1,6 +1,17 @@
 # Text to Video Generator
 
-A comprehensive pipeline that converts text prompts into engaging short-form videos with voiceovers and captions.
+A comprehensive pipeline that converts text prompts into engaging short-form videos with voiceovers, captions, and background music.
+
+## 🚀 Key Features
+
+- **Script Generation**: Create engaging scripts using AI models (DDC, Gemini, OpenRouter)
+- **Voiceover Synthesis**: Generate natural-sounding voiceovers
+- **Image Generation**: Create images from script segments
+- **Video Creation**: Assemble images into a video with animations
+- **Caption Generation**: Add automatically generated captions in different styles
+- **Background Music**: Add customizable background music
+- **Progress Tracking**: Monitor the generation process with a visual progress indicator
+- **Web Interface**: User-friendly Streamlit web application for easy video creation
 
 ## 🌟 Features
 
@@ -27,6 +38,7 @@ pillow>=10.0.0
 numpy>=1.24.0
 torch>=2.0.0
 edge-tts>=6.1.9
+streamlit>=1.30.0
 ```
 
 ## 🚀 Quick Start
@@ -56,6 +68,38 @@ edge-tts>=6.1.9
    python main.py --topic "Your topic here"
    ```
 
+## 💻 Streamlit Web Application
+
+This project now includes a Streamlit web application that provides a user-friendly interface for the text-to-video generation pipeline.
+
+### Running the Streamlit App
+
+1. **Using the Python script** (recommended):
+   ```bash
+   python run_app.py
+   ```
+
+2. **Using the batch file** (Windows):
+   ```bash
+   run_streamlit.bat
+   ```
+
+3. **Direct command**:
+   ```bash
+   streamlit run app.py
+   ```
+
+After starting the app, open your web browser and go to the URL shown in the terminal (typically http://localhost:8501).
+
+### Features of the Web Interface
+
+- Interactive form to enter your video topic
+- Real-time progress tracking during generation
+- Configurable options for captions and background music
+- Preview of generated script
+- Download button for the final video
+- Responsive layout with clear instructions
+
 ## 🛠️ Command Line Arguments
 
 - `--topic`, `-t`: Topic for video generation
@@ -67,7 +111,10 @@ edge-tts>=6.1.9
 ## 📁 Project Structure
 
 ```
+├── app.py                 # Streamlit web application
 ├── main.py                # Main entry point
+├── run_app.py             # Script to run the Streamlit app
+├── run_streamlit.bat      # Windows batch file to run the app
 ├── config.py              # Configuration settings
 ├── progress_tracker.py    # Progress tracking utilities
 ├── .env                   # Environment variables (API keys)
@@ -78,6 +125,7 @@ edge-tts>=6.1.9
 │   ├── Image/             # Image generation models
 │   ├── Video/             # Video creation models
 │   ├── Captions/          # Caption generation models
+│   ├── BGM/               # Background music models
 │   └── Animations/        # Animation effect models
 └── Data/                  # Data storage
     └── Temp/              # Temporary files during generation
@@ -115,7 +163,9 @@ You can extend the project by:
 3. Adding new image generation models in `Models/Image/Models/`
 4. Adding new video creation models in `Models/Video/Models/`
 5. Adding new caption models in `Models/Captions/Models/`
-6. Adding new animation styles in `Models/Animations/Models/`
+6. Adding new background music models in `Models/BGM/Models/`
+7. Adding new animation styles in `Models/Animations/Models/`
+8. Enhancing the Streamlit web interface in `app.py`
 
 ## 📝 License
 
@@ -127,4 +177,4 @@ Contributions are welcome! Feel free to submit pull requests or open issues to i
 
 ## 🧑‍💻 Developer
 
-Developed with 💘 by Krish.
+Developed by Jarair Ahmad

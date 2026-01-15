@@ -20,8 +20,9 @@ class Stage(Enum):
     IMAGE_GEN = 4
     VIDEO = 5
     CAPTIONS = 6
-    CLEANUP = 7
-    COMPLETE = 8
+    BGM = 7
+    CLEANUP = 8
+    COMPLETE = 9
 
 class ProgressTracker:
     """Tracks and displays progress throughout the generation pipeline."""
@@ -121,6 +122,7 @@ class ProgressTracker:
             Stage.IMAGE_GEN: "🎨",
             Stage.VIDEO: "🎬",
             Stage.CAPTIONS: "💬",
+            Stage.BGM: "🎵",
             Stage.CLEANUP: "🧹",
             Stage.COMPLETE: "✅",
         }

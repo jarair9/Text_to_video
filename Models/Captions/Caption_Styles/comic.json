@@ -3,9 +3,9 @@
     "padding_x_ratio": 0.02,
     "padding_top_ratio": 0.003,
     "padding_bottom_ratio": 0.04,
-    "bg_color": [60, 60, 60, 170],
-    "text_color": [255, 255, 240, 255],
-    "position": "bottom",
+    "bg_color": [0, 0, 0, 0],
+    "text_color": [255, 255, 240, 255], 
+    "position": "center",
     "vertical_offset": 350,
     "font": "comic.ttf",
     "uppercase": false
