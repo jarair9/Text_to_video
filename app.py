@@ -121,7 +121,15 @@ def run_generation_pipeline(topic, script_model, img_model, audio_model, caption
         # 7. Add Captions to Video
         if video_path and include_captions:
             tracker.update_stage(Stage.CAPTIONS)
-            caption_generator = load_caption_model(caption_model)
+            
+            # Handle potential variations in caption model name
+            actual_caption_model = caption_model
+            if 'whisper' in caption_model.lower() and caption_model.lower() != 'whisperx':
+                actual_caption_model = 'whisperx'
+            elif 'simple' in caption_model.lower() and caption_model.lower() != 'simple_captions':
+                actual_caption_model = 'simple_captions'
+            
+            caption_generator = load_caption_model(actual_caption_model)
             
             try:
                 captioned_video_path = caption_generator.process_video(video_path, caption_style)
@@ -215,22 +223,46 @@ def main():
         caption_models = ["whisperx", "simple_captions"]
         animations = ["fadein_fadeout", "zoom_fade_mix", "zoom_in_out"]
         
-        # Ensure current config values are in the lists
+        # Handle common variations and ensure current config values are in the lists
         if SCRIPT_MODEL not in script_models:
             script_models.insert(0, SCRIPT_MODEL)
         if IMG_MODEL not in img_models:
             img_models.insert(0, IMG_MODEL)
         if AUDIO_MODEL not in audio_models:
             audio_models.insert(0, AUDIO_MODEL)
-        if CAPTION_MODEL not in caption_models:
-            caption_models.insert(0, CAPTION_MODEL)
+        
+        # Handle caption model variations (case-insensitive check)
+        caption_model_found = False
+        for model in caption_models:
+            if model.lower() == CAPTION_MODEL.lower():
+                caption_model_found = True
+                break
+        if not caption_model_found:
+            # Check for partial matches
+            if 'whisper' in CAPTION_MODEL.lower():
+                # If user has 'whisper' in config, map to 'whisperx'
+                if 'whisperx' not in caption_models:
+                    caption_models.insert(0, 'whisperx')
+            elif 'simple' in CAPTION_MODEL.lower():
+                if 'simple_captions' not in caption_models:
+                    caption_models.insert(0, 'simple_captions')
+            else:
+                caption_models.insert(0, CAPTION_MODEL)
+        
         if ANIMATION not in animations:
             animations.insert(0, ANIMATION)
         
         script_model_index = script_models.index(SCRIPT_MODEL) if SCRIPT_MODEL in script_models else 0
         img_model_index = img_models.index(IMG_MODEL) if IMG_MODEL in img_models else 0
         audio_model_index = audio_models.index(AUDIO_MODEL) if AUDIO_MODEL in audio_models else 0
-        caption_model_index = caption_models.index(CAPTION_MODEL) if CAPTION_MODEL in caption_models else 0
+        
+        # Find the correct index for caption model
+        caption_model_index = 0
+        for i, model in enumerate(caption_models):
+            if model.lower() == CAPTION_MODEL.lower():
+                caption_model_index = i
+                break
+        
         animation_index = animations.index(ANIMATION) if ANIMATION in animations else 0
         
         script_model = st.selectbox("Script Model", script_models, index=script_model_index)
