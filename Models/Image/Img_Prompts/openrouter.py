@@ -17,9 +17,12 @@ class PromptGenerator:
         if not self.api_key:
             raise ValueError("❌ OPENROUTER_API_KEY not found. Check your .env file.")
 
+        import httpx
+        http_client = httpx.Client()
         self.client = OpenAI(
             api_key=self.api_key,
-            base_url=self.base_url
+            base_url=self.base_url,
+            http_client=http_client
         )
 
     def generate_prompt(self, scene_text):

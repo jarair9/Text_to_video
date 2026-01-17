@@ -74,25 +74,48 @@ def transcribe_audio_with_script(audio_file=SAVE_VOICEOVER_TO, script_file=SAVE_
     if not os.path.exists(audio_file):
         print(f"❌ Audio file not found: {audio_file}")
         return []
+    
+    # Attempt to use Whisper for accurate transcription
+    try:
+        model = whisper.load_model("small")
+        result = model.transcribe(audio_file)
+
+        total_audio_duration = result["segments"][-1]["end"] if result["segments"] else 52.0
+        script_lines = load_script_lines(script_file)
+
+        estimated_durations = [max(1.0, 0.25 * len(line.split())) for line in script_lines]
+        total_estimated = sum(estimated_durations)
+
+        scale_factor = total_audio_duration / total_estimated
+        scaled_durations = [d * scale_factor for d in estimated_durations]
+
+        matched_segments = []
+        last_end = 0.0
+        for line, duration in zip(script_lines, scaled_durations):
+            segment = {"start": last_end, "end": last_end + duration, "text": line}
+            matched_segments.append(segment)
+            last_end += duration
+    except Exception as e:
+        print(f"⚠️ Whisper transcription failed: {str(e)}. Using estimated timing.")
+        # Fallback to simple estimation based on script lines
+        script_lines = load_script_lines(script_file)
+        matched_segments = []
+        current_time = 0.0
+        for line in script_lines:
+            if line.strip():
+                # Estimate duration based on number of words (0.5 seconds per word avg)
+                word_count = len(line.split())
+                duration = max(2.0, 0.3 * word_count)  # At least 2 seconds per segment
+                segment = {
+                    "start": current_time,
+                    "end": current_time + duration,
+                    "text": line.strip()
+                }
+                matched_segments.append(segment)
+                current_time += duration
         
-    model = whisper.load_model("small")
-    result = model.transcribe(audio_file)
-
-    total_audio_duration = result["segments"][-1]["end"] if result["segments"] else 52.0
-    script_lines = load_script_lines(script_file)
-
-    estimated_durations = [max(1.0, 0.25 * len(line.split())) for line in script_lines]
-    total_estimated = sum(estimated_durations)
-
-    scale_factor = total_audio_duration / total_estimated
-    scaled_durations = [d * scale_factor for d in estimated_durations]
-
-    matched_segments = []
-    last_end = 0.0
-    for line, duration in zip(script_lines, scaled_durations):
-        segment = {"start": last_end, "end": last_end + duration, "text": line}
-        matched_segments.append(segment)
-        last_end += duration
+        # Set total duration based on our estimates
+        total_audio_duration = current_time
 
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     with open(output_file, "w", encoding="utf-8") as f:

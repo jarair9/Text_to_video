@@ -51,7 +51,9 @@ Thumbs.db
 .env.backup
 
 # Data files that are generated
+Video/
 Data/Temp/
+Data/History/
 *.mp4
 *.jpg
 *.png
@@ -64,3 +66,45 @@ Data/Temp/
 
 # Jupyter notebooks
 .ipynb_checkpoints
+
+# More comprehensive media files
+*.avi
+*.mov
+*.mkv
+*.wmv
+*.flv
+*.webm
+*.gif
+*.jpeg
+*.bmp
+*.tiff
+*.svg
+*.flac
+*.aac
+*.m4a
+
+# Large generated files
+Generated_Images/
+Generated_Audio/
+Generated_Video/
+output_video.mp4
+
+# Additional temp and cache directories
+.temp/
+tmp/
+.cache/
+__pycache__/
+*.pyc
+*.pyo
+*~
+.recommenders
+
+# Python virtual environments (alternative names)
+.venv
+env.bak/
+venv.bak/
+
+# More specific project files
+generation.log
+*.tmp
+*.temp

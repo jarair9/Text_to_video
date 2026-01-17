@@ -1,11 +1,12 @@
 import os
 import sys
+import json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 sys.dont_write_bytecode = True
 from moviepy.editor import *
 from moviepy.video.fx.all import crop
 from Models.Animations.animations_factory import load_animation_model
-from Models.Video.utils import ensure_directories, verify_assets, transcribe_audio_with_script, crop_to_portrait
+from Models.Video.utils import ensure_directories, verify_assets, transcribe_audio_with_script, crop_to_portrait, load_timestamps, load_script_lines
 from Models.config import SAVE_VIDEO_TO, VIDEO_FPS, SAVE_TIMESTAMPS_TO, SAVE_SCRIPT_TO, SAVE_VOICEOVER_TO, SAVE_IMAGES_TO
 from config import VIDEO_MODEL_CONFIG
 
@@ -20,11 +21,34 @@ class VideoGenerator:
         """Generates the video based on the audio and images."""
         print(f"🎬 Starting video generation with config: {self.config}...")
         
-        timestamps = transcribe_audio_with_script(
-            audio_file=self.audio_file,
-            script_file=SAVE_SCRIPT_TO,
-            output_file=SAVE_TIMESTAMPS_TO
-        )
+        # Check if timestamps already exist (from caption system or previous run)
+        if os.path.exists(SAVE_TIMESTAMPS_TO):
+            print("✅ Using existing timestamps...")
+            timestamps = load_timestamps(SAVE_TIMESTAMPS_TO)
+        else:
+            # Fallback to Whisper-based timestamp generation
+            # But since Whisper is causing numpy issues, we'll try to continue without timestamps
+            print("⚠️ No timestamps found, attempting to continue without them...")
+            # Load script lines directly and estimate timing
+            script_lines = load_script_lines(SAVE_SCRIPT_TO)
+            # Create a basic timeline assuming ~2.5 seconds per sentence
+            timestamps = []
+            current_time = 0.0
+            for i, line in enumerate(script_lines):
+                if line.strip():
+                    duration = max(2.0, 0.5 * len(line.split()))  # At least 2 seconds per segment
+                    timestamps.append({
+                        "start": current_time,
+                        "end": current_time + duration,
+                        "text": line.strip()
+                    })
+                    current_time += duration
+            
+            # Save the generated timestamps for future use
+            os.makedirs(os.path.dirname(SAVE_TIMESTAMPS_TO), exist_ok=True)
+            with open(SAVE_TIMESTAMPS_TO, "w", encoding="utf-8") as f:
+                json.dump(timestamps, f, indent=4)
+            print(f"✅ Estimated timestamps saved to {SAVE_TIMESTAMPS_TO}")
         
         if not verify_assets(timestamps, self.audio_file):
             print("⚠️ Some assets are missing but continuing with available ones...")

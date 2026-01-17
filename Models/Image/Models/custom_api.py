@@ -15,7 +15,7 @@ class ImageGenerator:
         # Cloudflare Direct API Configuration
         self.account_id = "0c27843ed41f48522815727e4fbf5c3c"  # Your Account ID
         self.auth_token = "6GFEGqXK55bHnm90r3kWUOLnJSk4-kviMH7u2Was"   # Your API Token
-        self.api_url = f"https://api.cloudflare.com/client/v4/accounts/{self.account_id}/ai/run/@cf/bytedance/stable-diffusion-xl-lightning"
+        self.api_url = f"https://api.cloudflare.com/client/v4/accounts/{self.account_id}/ai/run/@cf/stabilityai/stable-diffusion-xl-base-1.0"
         
         # Cloudflare Direct API headers
         self.headers = {
@@ -35,15 +35,12 @@ class ImageGenerator:
     def download_image(self, prompt, img_number):
         print(f"🎨 Generating image {img_number} with prompt: {prompt}")
         
-        # Optimize prompt for Cloudflare Direct API
-        # Extract the core subject from the tag-based prompt
-        core_subject = prompt.split(',')[0]  # Get the first part before commas
-        optimized_prompt = core_subject[:100]  # Limit length for API
+        # Use the full prompt as received since AI is instructed to create short prompts
+        optimized_prompt = prompt
         
-        # Cloudflare Direct API payload format
+        # Cloudflare Direct API payload format for Stability AI SDXL model
         payload = {
             "prompt": optimized_prompt,
-            "num_steps": 4,      # Fast inference
             "width": 768,        # 9:16 aspect ratio width
             "height": 1024       # 9:16 aspect ratio height
         }

@@ -5,11 +5,11 @@ from Models.config import SAVE_SCRIPT_TO
 
 # Update the System Prompt to be more strict
 SYSTEM_PROMPT = (
-    "You are a specialized Image Prompt Generator. Your only job is to turn story lines into "
-    "technical keyword strings for SDXL Lightning. "
-    "\n- OUTPUT ONLY the raw tags. No introductory text."
-    "\n- Use keywords like: cinematic, 8k, photorealistic, volumetric lighting, hyper-detailed."
-    "\n- Structure: [Subject], [Action], [Environment], [Lighting], [Style]."
+    "You are an expert at converting scene descriptions into detailed image generation prompts. "
+    "Create vivid, descriptive prompts that capture the key visual elements and mood of the scene. "
+    "Focus on visual details, style, lighting, and composition. "
+    "Include technical terms like: cinematic, 8k, photorealistic, highly detailed, sharp focus, dramatic lighting, masterpiece, atmospheric. "
+    "Keep prompts under 120 characters for API compatibility."
 )
 
 def ensure_save_directory(filepath):
@@ -35,20 +35,16 @@ def load_script_lines(script_file=SAVE_SCRIPT_TO):
         return [line.strip() for line in f.readlines() if line.strip()]
 
 def format_for_image_prompt(script_text):
-    """Converts a script into a list of image prompts using tag-based logic."""
+    """Converts a script into a list of image prompts using descriptive visual logic."""
     lines = script_text.split('\n')
     image_prompts = []
     
     for line in lines:
         clean_line = line.strip()
         if clean_line:
-            # REMOVED: "High quality, photorealistic image of..."
-            # ADDED: A tag-based structure that works better with Lightning models
-            prompt = (
-                f"{clean_line}, cinematic shot, 8k resolution, "
-                f"highly detailed textures, masterpiece, sharp focus, "
-                f"dramatic lighting, photorealistic style"
-            )
+            # Transform narrative text into visual descriptions
+            # Focus on what the viewer sees, not abstract concepts
+            prompt = f"Cinematic, ultra detailed, 8k, photorealistic image of {clean_line}, professional photography, sharp focus, dramatic lighting, masterpiece, atmospheric"
             image_prompts.append(prompt)
     
     return image_prompts

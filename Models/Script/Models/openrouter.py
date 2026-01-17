@@ -19,7 +19,9 @@ class ScriptGenerator:
 
         # Initialize OpenAI client without potential proxy conflicts
         # This avoids the 'proxies' argument error in certain OpenAI library versions
-        self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
+        import httpx
+        http_client = httpx.Client()
+        self.client = OpenAI(api_key=self.api_key, base_url=self.base_url, http_client=http_client)
 
         os.makedirs(os.path.dirname(SAVE_SCRIPT_TO), exist_ok=True)
 
